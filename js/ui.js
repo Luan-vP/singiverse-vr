@@ -14,6 +14,7 @@
 
       $('start-screen').hidden = true;
       $('controls').hidden = false;
+      _startPitchDisplay();
     } catch (err) {
       console.error('Startup failed:', err);
       btn.disabled = false;
@@ -61,6 +62,32 @@
       }
       micOn = !micOn;
     });
+
+    // Pitch calibration
+    $('set-low').addEventListener('click', () => {
+      const hz = Audio.getLastPitch();
+      if (hz > 0) { Audio.setLowPitch(hz); _updateCalibRange(); }
+    });
+
+    $('set-high').addEventListener('click', () => {
+      const hz = Audio.getLastPitch();
+      if (hz > 0) { Audio.setHighPitch(hz); _updateCalibRange(); }
+    });
+  }
+
+  function _updateCalibRange() {
+    $('calib-range').textContent =
+      `${Math.round(Audio.getLowPitch())} – ${Math.round(Audio.getHighPitch())} Hz`;
+  }
+
+  let _pitchRafId = null;
+  function _startPitchDisplay() {
+    function loop() {
+      const hz = Audio.getLastPitch();
+      $('pitch-hz').textContent = hz > 0 ? `${Math.round(hz)} Hz` : '-- Hz';
+      _pitchRafId = requestAnimationFrame(loop);
+    }
+    loop();
   }
 
   document.addEventListener('DOMContentLoaded', bindControls);

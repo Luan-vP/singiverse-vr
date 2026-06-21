@@ -155,3 +155,36 @@ input[type="range"] {
   background: rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.6);
 }
+
+/* Calibration row */
+.calibrate-row {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pitch-display {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  min-width: 72px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.calib-btn {
+  background: rgba(168, 85, 247, 0.3);
+  color: #e9d5ff;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  font-size: 0.8rem;
+  padding: 6px 14px;
+}
+
+.calib-range {
+  font-size: 0.75rem;
+  opacity: 0.55;
+  white-space: nowrap;
+  flex: 1;
+  text-align: center;
+}

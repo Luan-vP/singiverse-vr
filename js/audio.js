@@ -1,18 +1,19 @@
 // Microphone capture → pitch detection → volume analysis.
 // Pitch (Hz) is mapped to a background hue; volume drives the star field.
 const Audio = (() => {
-  const MIN_PITCH  = 80;    // Hz – low male voice
-  const MAX_PITCH  = 1000;  // Hz – high soprano / falsetto
-  const SMOOTHING  = 0.12;  // EMA factor for hue smoothing (lower = smoother)
-  const SILENCE_RMS = 0.01; // Below this RMS we skip pitch detection
+  let _minPitch   = 80;    // Hz – calibratable low end
+  let _maxPitch   = 1000;  // Hz – calibratable high end
+  const SMOOTHING  = 0.12;
+  const SILENCE_RMS = 0.01;
 
   let _analyser = null;
   let _sampleRate = 44100;
-  let _byteArr = null;   // Uint8Array, frequencyBinCount
-  let _floatArr = null;  // Float32Array, fftSize
+  let _byteArr = null;
+  let _floatArr = null;
   let _active = false;
   let _rafId = null;
   let _smoothHue = 200;
+  let _lastPitch = -1;
 
   // Naive autocorrelation pitch detector (McLeod-style clip + parabolic interp).
   // fftSize should be ≤ 1024 for acceptable mobile performance.
@@ -76,9 +77,10 @@ const Audio = (() => {
     const pitch = _detectPitch(_floatArr, _sampleRate);
 
     if (pitch > 0) {
-      const clamped    = Math.max(MIN_PITCH, Math.min(MAX_PITCH, pitch));
-      const targetHue  = ((clamped - MIN_PITCH) / (MAX_PITCH - MIN_PITCH)) * 360;
-      _smoothHue       = _smoothHue + (targetHue - _smoothHue) * SMOOTHING;
+      _lastPitch = pitch;
+      const clamped   = Math.max(_minPitch, Math.min(_maxPitch, pitch));
+      const targetHue = ((clamped - _minPitch) / (_maxPitch - _minPitch)) * 360;
+      _smoothHue      = _smoothHue + (targetHue - _smoothHue) * SMOOTHING;
     }
 
     const lightness = 8 + volume * 28;
@@ -114,5 +116,16 @@ const Audio = (() => {
     _analyser = null;
   }
 
-  return { start, stop, isActive: () => _active };
+  function setLowPitch(hz)  { _minPitch = Math.min(hz, _maxPitch - 10); }
+  function setHighPitch(hz) { _maxPitch = Math.max(hz, _minPitch + 10); }
+
+  return {
+    start, stop,
+    isActive:     () => _active,
+    getLastPitch: () => _lastPitch,
+    getLowPitch:  () => _minPitch,
+    getHighPitch: () => _maxPitch,
+    setLowPitch,
+    setHighPitch,
+  };
 })();
