@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Singiverse VR</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <link rel="stylesheet" href="css/ui.css">
+  <script src="js/stars.js"></script>
+</head>
+<body>
+  <a-scene background="color: #020208" vr-mode-ui="enabled: true" renderer="antialias: false">
+    <a-sky id="sky" color="#020208"></a-sky>
+    <a-entity id="star-container" star-field></a-entity>
+    <a-entity id="camera-rig" position="0 0 0">
+      <a-camera look-controls wasd-controls="false" fov="80"></a-camera>
+    </a-entity>
+  </a-scene>
+
+  <div id="hud">
+    <div id="start-screen">
+      <h1>Singiverse VR</h1>
+      <p>Sing into your mic — your voice shapes the universe.</p>
+      <button id="start-btn">Enter</button>
+    </div>
+
+    <div id="controls" hidden>
+      <div class="row">
+        <div class="control-group">
+          <span class="label">BPM <em id="bpm-val">90</em></span>
+          <input type="range" id="bpm" min="60" max="180" value="90">
+        </div>
+        <div class="control-group">
+          <span class="label">Vol <em id="vol-val">80</em>%</span>
+          <input type="range" id="master-vol" min="0" max="100" value="80">
+        </div>
+      </div>
+      <div class="row beats-row">
+        <label class="beat-toggle">
+          <input type="checkbox" id="kick-toggle" checked>
+          <span>Kick</span>
+        </label>
+        <label class="beat-toggle">
+          <input type="checkbox" id="snare-toggle" checked>
+          <span>Snare</span>
+        </label>
+        <label class="beat-toggle">
+          <input type="checkbox" id="hat-toggle" checked>
+          <span>Hat</span>
+        </label>
+        <button id="mic-toggle" class="pill active">Mic On</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/backbeat.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
